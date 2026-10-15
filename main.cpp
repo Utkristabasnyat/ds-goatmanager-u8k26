@@ -50,15 +50,12 @@ int main() {
 
   fin1.close();
 
-  // check that all required data was loaded
   if (nameCount != SZ_NAMES || colorCount != SZ_COLORS) {
     cout << "Error: Could not load names and colors." << endl;
     return 1;
   }
 
-  // create a list of goats
   list<Goat> trip;
-
   bool again = true;
 
   while (again) {
@@ -68,7 +65,7 @@ int main() {
       add_goat(trip, names, colors);
     }
     else if (choice == 2) {
-      cout << "Delete a goat - coming soon!" << endl;
+      delete_goat(trip);
     }
     else if (choice == 3) {
       display_trip(trip);
@@ -140,4 +137,55 @@ void display_trip(list<Goat> trip) {
          << goat.get_color() << ")" << endl;
     number++;
   }
+}
+
+// select a goat by its number
+int select_goat(list<Goat> trip) {
+  display_trip(trip);
+
+  if (trip.empty())
+    return 0;
+
+  int selection;
+
+  while (true) {
+    cout << "Select a goat to delete (1-" << trip.size() << "): ";
+
+    if (cin >> selection &&
+        selection >= 1 &&
+        selection <= static_cast<int>(trip.size())) {
+      return selection;
+    }
+
+    if (cin.eof())
+      return 0;
+
+    cout << "Invalid selection. Please try again." << endl;
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+  }
+}
+
+// delete the selected goat
+void delete_goat(list<Goat> &trip) {
+  if (trip.empty()) {
+    cout << endl << "No goats available to delete." << endl;
+    return;
+  }
+
+  int selection = select_goat(trip);
+
+  if (selection == 0)
+    return;
+
+  list<Goat>::iterator it = trip.begin();
+
+  for (int i = 1; i < selection; i++)
+    it++;
+
+  cout << "Deleting goat: " << it->get_name() << endl;
+
+  trip.erase(it);
+
+  cout << "Goat deleted successfully!" << endl;
 }
