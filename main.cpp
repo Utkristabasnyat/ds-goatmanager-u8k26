@@ -29,40 +29,49 @@ int main_menu();
 int main() {
   srand(time(0));
 
+  string names[SZ_NAMES];
+  string colors[SZ_COLORS];
+
   // read names from file
   ifstream fin("names.txt");
-  string names[SZ_NAMES];
-  int i = 0;
+  int nameCount = 0;
 
-  while (i < SZ_NAMES && fin >> names[i])
-    i++;
+  while (nameCount < SZ_NAMES && fin >> names[nameCount])
+    nameCount++;
 
   fin.close();
 
   // read colors from file
   ifstream fin1("colors.txt");
-  string colors[SZ_COLORS];
-  i = 0;
+  int colorCount = 0;
 
-  while (i < SZ_COLORS && fin1 >> colors[i])
-    i++;
+  while (colorCount < SZ_COLORS && fin1 >> colors[colorCount])
+    colorCount++;
 
   fin1.close();
 
-  // menu loop
+  // check that all required data was loaded
+  if (nameCount != SZ_NAMES || colorCount != SZ_COLORS) {
+    cout << "Error: Could not load names and colors." << endl;
+    return 1;
+  }
+
+  // create a list of goats
+  list<Goat> trip;
+
   bool again = true;
 
   while (again) {
     int choice = main_menu();
 
     if (choice == 1) {
-      cout << "Add a goat - coming soon!" << endl;
+      add_goat(trip, names, colors);
     }
     else if (choice == 2) {
       cout << "Delete a goat - coming soon!" << endl;
     }
     else if (choice == 3) {
-      cout << "List goats - coming soon!" << endl;
+      display_trip(trip);
     }
     else if (choice == 4) {
       cout << "Goodbye!" << endl;
@@ -95,5 +104,40 @@ int main_menu() {
     cout << "Invalid choice. Please enter 1-4." << endl;
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
+  }
+}
+
+// add a random goat to the list
+void add_goat(list<Goat> &trip, string names[], string colors[]) {
+  string name = names[rand() % SZ_NAMES];
+  int age = rand() % (MAX_AGE + 1);
+  string color = colors[rand() % SZ_COLORS];
+
+  Goat newGoat(name, age, color);
+  trip.push_back(newGoat);
+
+  cout << endl << "Goat added successfully!" << endl;
+  cout << "Name: " << newGoat.get_name() << endl;
+  cout << "Age: " << newGoat.get_age() << endl;
+  cout << "Color: " << newGoat.get_color() << endl;
+}
+
+// display all goats
+void display_trip(list<Goat> trip) {
+  cout << endl << "Current Goat Trip:" << endl;
+
+  if (trip.empty()) {
+    cout << "No goats in the trip." << endl;
+    return;
+  }
+
+  int number = 1;
+
+  for (Goat goat : trip) {
+    cout << "[" << number << "] "
+         << goat.get_name() << " ("
+         << goat.get_age() << ", "
+         << goat.get_color() << ")" << endl;
+    number++;
   }
 }
