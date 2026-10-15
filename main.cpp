@@ -32,7 +32,7 @@ int main() {
   string names[SZ_NAMES];
   string colors[SZ_COLORS];
 
-  // read names from file
+  // read goat names
   ifstream fin("names.txt");
   int nameCount = 0;
 
@@ -41,7 +41,7 @@ int main() {
 
   fin.close();
 
-  // read colors from file
+  // read goat colors
   ifstream fin1("colors.txt");
   int colorCount = 0;
 
@@ -71,7 +71,7 @@ int main() {
       display_trip(trip);
     }
     else if (choice == 4) {
-      cout << "Goodbye!" << endl;
+      cout << endl << "Thank you for using Goat Manager 3001!" << endl;
       again = false;
     }
   }
@@ -79,13 +79,15 @@ int main() {
   return 0;
 }
 
-// display menu and get a valid choice
+// show main menu and validate choice
 int main_menu() {
   int choice;
 
   while (true) {
     cout << endl;
-    cout << "*** GOAT MANAGER 3001 ***" << endl;
+    cout << "================================" << endl;
+    cout << "       GOAT MANAGER 3001        " << endl;
+    cout << "================================" << endl;
     cout << "[1] Add a goat" << endl;
     cout << "[2] Delete a goat" << endl;
     cout << "[3] List goats" << endl;
@@ -104,7 +106,7 @@ int main_menu() {
   }
 }
 
-// add a random goat to the list
+// add a randomly generated goat
 void add_goat(list<Goat> &trip, string names[], string colors[]) {
   string name = names[rand() % SZ_NAMES];
   int age = rand() % (MAX_AGE + 1);
@@ -113,33 +115,49 @@ void add_goat(list<Goat> &trip, string names[], string colors[]) {
   Goat newGoat(name, age, color);
   trip.push_back(newGoat);
 
-  cout << endl << "Goat added successfully!" << endl;
-  cout << "Name: " << newGoat.get_name() << endl;
-  cout << "Age: " << newGoat.get_age() << endl;
+  cout << endl;
+  cout << "----- GOAT ADDED -----" << endl;
+  cout << "Name : " << newGoat.get_name() << endl;
+  cout << "Age  : " << newGoat.get_age() << endl;
   cout << "Color: " << newGoat.get_color() << endl;
+  cout << "----------------------" << endl;
+  cout << "Total goats: " << trip.size() << endl;
 }
 
-// display all goats
+// display all goats in a table
 void display_trip(list<Goat> trip) {
-  cout << endl << "Current Goat Trip:" << endl;
+  cout << endl;
+  cout << "========== CURRENT GOATS ==========" << endl;
 
   if (trip.empty()) {
     cout << "No goats in the trip." << endl;
+    cout << "===================================" << endl;
     return;
   }
+
+  cout << left
+       << setw(6) << "No."
+       << setw(12) << "Name"
+       << setw(7) << "Age"
+       << "Color" << endl;
+  cout << "-----------------------------------" << endl;
 
   int number = 1;
 
   for (Goat goat : trip) {
-    cout << "[" << number << "] "
-         << goat.get_name() << " ("
-         << goat.get_age() << ", "
-         << goat.get_color() << ")" << endl;
+    cout << left
+         << setw(6) << ("[" + to_string(number) + "]")
+         << setw(12) << goat.get_name()
+         << setw(7) << goat.get_age()
+         << goat.get_color() << endl;
     number++;
   }
+
+  cout << "-----------------------------------" << endl;
+  cout << "Total goats: " << trip.size() << endl;
 }
 
-// select a goat by its number
+// display goats and get a valid selection
 int select_goat(list<Goat> trip) {
   display_trip(trip);
 
@@ -149,7 +167,8 @@ int select_goat(list<Goat> trip) {
   int selection;
 
   while (true) {
-    cout << "Select a goat to delete (1-" << trip.size() << "): ";
+    cout << "Enter goat number to delete (1-"
+         << trip.size() << "): ";
 
     if (cin >> selection &&
         selection >= 1 &&
@@ -160,13 +179,13 @@ int select_goat(list<Goat> trip) {
     if (cin.eof())
       return 0;
 
-    cout << "Invalid selection. Please try again." << endl;
+    cout << "Invalid goat number. Please try again." << endl;
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
   }
 }
 
-// delete the selected goat
+// delete the selected goat from the list
 void delete_goat(list<Goat> &trip) {
   if (trip.empty()) {
     cout << endl << "No goats available to delete." << endl;
@@ -183,9 +202,11 @@ void delete_goat(list<Goat> &trip) {
   for (int i = 1; i < selection; i++)
     it++;
 
-  cout << "Deleting goat: " << it->get_name() << endl;
-
+  string deletedName = it->get_name();
   trip.erase(it);
 
-  cout << "Goat deleted successfully!" << endl;
+  cout << endl;
+  cout << "Goat \"" << deletedName
+       << "\" deleted successfully!" << endl;
+  cout << "Total goats remaining: " << trip.size() << endl;
 }
